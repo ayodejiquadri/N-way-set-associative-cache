@@ -42,7 +42,7 @@ namespace NwaySetAssociativeCache
                 {
                     _replacementAlgorithm.OnGet(setElement);
                     data = setElement.Data;
-                    //break;
+                    break;
                 }
             }
             return data;
