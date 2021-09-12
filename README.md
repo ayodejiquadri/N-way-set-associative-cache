@@ -1,6 +1,6 @@
 # N-way-set-associative-cache
 
-Basic implementation of a generic [N-way Set Associative Cache](https://en.wikipedia.org/wiki/Cache_placement_policies#Set-associative_cache) using Java
+Basic implementation of a generic [N-way Set Associative Cache](https://en.wikipedia.org/wiki/Cache_placement_policies#Set-associative_cache) using C#
 
 Comes with 3 basic [Cache Replacement policy implementations](https://en.wikipedia.org/wiki/Cache_replacement_policies):
 1. [Least Recently Used (LRU)](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU))
