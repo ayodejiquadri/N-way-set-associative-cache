@@ -2,9 +2,12 @@
 
 namespace NwaySetAssociativeCache
 {
-    public interface IReplacementAlgorithm<K,V> : IComparer<CacheElement<K,V>>
+    public interface IReplacementAlgorithm<K,V>
     {
-        void OnGet(CacheElement<K, V> element); 
-        void OnPut(CacheElement<K, V> element);
+       // void Set(K newkey, V data);
+        bool Contains(K key);
+       // void SetCache(List<Dictionary<K, V>> cache);
+        V Get(K key);
+        void Set(K newkey, V data);
     }
 }

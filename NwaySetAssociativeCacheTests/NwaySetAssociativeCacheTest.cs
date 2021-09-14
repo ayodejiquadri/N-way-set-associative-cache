@@ -12,8 +12,12 @@ namespace NwaySetAssociativeCacheTests
 
             cache.Put("Something", "Good");
             cache.Put("Always", "Bad");
+            cache.Put("Always", "Bad2");
+            cache.Put("test1", "test1v");
+            cache.Put("test2", "test2v");
             Assert.Equal("Good", cache.Get("Something"));
-            Assert.Equal("Bad", cache.Get("Always"));
+            Assert.Equal("Bad2", cache.Get("Always"));
+           // Assert.Equal("test1v", cache.Get("test1"));
         }
     }
 }
