@@ -2,48 +2,20 @@
 
 namespace NwaySetAssociativeCache
 {
-    public class MruReplacementAlgorithm<K, V> : IReplacementAlgorithm<K, V>
+    public class MruReplacementAlgorithm<K> : IReplacementAlgorithm<K>
     {
-        private Dictionary<K, DNode<K, V>> _setData = new Dictionary<K, DNode<K, V>>();
-        private int _sizeOfSet;
-        DNode<K, V> _head, _tail;
-        public MruReplacementAlgorithm(int sizeOfSet)
+        private Dictionary<K, DNode<K>> _data = new Dictionary<K, DNode<K>>();
+        DNode<K> _head, _tail;
+
+        public void OnGet(K key)
         {
-            _sizeOfSet = sizeOfSet;
+            MoveToHead(_data[key]);
         }
 
-        public V Get(K key)
+        public void OnSetNew(K key)
         {
-            if (_setData.TryGetValue(key, out DNode<K, V> d))
-            {
-                if (_head == null)
-                {
-                    _head = d;
-                    _tail = d;
-                }
-                else
-                {
-                    _head.Previous = d;
-                    d.Next = _head;
-                    _head = d;
-                }
-            }
-            if (d == null)
-                return default;
-
-            return d.Val;
-        }
-
-        public void Set(K key, V data)
-        {
-            DNode<K, V> dNew = new DNode<K, V>(key, data);
-            Remove(dNew);
-
-            if (_setData.Count >= _sizeOfSet && _tail != null)
-            {
-                Remove(_head);
-            }
-            _setData.Add(key, dNew);
+            DNode<K> dNew = new DNode<K>(key);
+            _data.Add(key, dNew);
             if (_head == null)
             {
                 _head = dNew;
@@ -51,36 +23,52 @@ namespace NwaySetAssociativeCache
             }
             else
             {
-                _head.Previous = dNew;
                 dNew.Next = _head;
+                _head.Previous = dNew;
                 _head = dNew;
             }
         }
-        public bool Contains(K key)
-        {
-            return _setData.ContainsKey(key);
-        }
-        private void Remove(DNode<K, V> d)
-        {
-            DNode<K, V> actualValue = d;
-            _setData.TryGetValue(d.Key, out actualValue);
 
-            _setData.Remove(d.Key);
-            RemoveDNode(actualValue);
+        public void OnSetUpdate(K key)
+        {
+            MoveToHead(_data[key]);
         }
 
-        private void RemoveDNode(DNode<K, V> d)
+        public K GetKeyToRemove()
         {
-            if (d == null)
+            return _head.Key;
+        }
+
+        public void OnRemove()
+        {
+            RemoveHead();
+        }
+
+        private void RemoveHead()
+        {
+            _data.Remove(_head.Key);
+            if (_head.Next != null)
+            {
+                _head.Next.Previous = null;
+                _head = _head.Next;
+            }
+        }
+
+        private void MoveToHead(DNode<K> dNode)
+        {
+            if (_head == dNode)
                 return;
-            if (d.Previous != null)
-                d.Previous.Next = d.Next;
-            if (d.Next != null)
-                d.Next.Previous = d.Previous;
-            if (d == _tail)
-                _tail = d.Previous;
-            if (d == _head)
-                _head = d.Next;
+            if (dNode.Previous != null)
+                dNode.Previous.Next = dNode.Next;
+            if (dNode.Next != null)
+                dNode.Next.Previous = dNode.Previous;
+            if (dNode == _tail)
+                _tail = dNode.Previous;
+
+            _head.Previous = dNode;
+            dNode.Next = _head;
+            _head = dNode;
         }
     }
 }
+

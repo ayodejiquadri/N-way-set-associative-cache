@@ -1,48 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace NwaySetAssociativeCache
 {
-    public class LruReplacementAlgorithm<K, V> : IReplacementAlgorithm<K, V>
+    public class LruReplacementAlgorithm<K> : IReplacementAlgorithm<K>
     {
-        private Dictionary<K, DNode<K, V>> _setData = new Dictionary<K, DNode<K, V>>();
-        private int _sizeOfSet;
-        DNode<K,V> _head, _tail;
-        public LruReplacementAlgorithm(int sizeOfSet)
+        private Dictionary<K, DNode<K>> _data = new Dictionary<K, DNode<K>>();
+        DNode<K> _head, _tail;
+
+        public void OnGet(K key)
         {
-            _sizeOfSet = sizeOfSet;
-        }
-        
-        public V Get(K key)
-        {
-            if (_setData.TryGetValue(key, out DNode<K, V> d)) 
-            {
-                MoveToHead(d);
-                return d.Val;
-            }
-            return default;
+            MoveToHead(_data[key]);
         }
 
-        public void Set(K key, V data)
+        public void OnSetNew(K key)
         {
-            if (_setData.ContainsKey(key)) 
-            {
-                _setData[key].Val = data;
-                MoveToHead(_setData[key]);
-                return;
-            }
-            if (_setData.Count >= _sizeOfSet && _tail != null)
-            {
-                RemoveTail();
-            }
-            DNode<K, V> dNew = new DNode<K, V>(key, data);
-            _setData.Add(key, dNew);
+            DNode<K> dNew = new DNode<K>(key);
+            _data.Add(key, dNew);
             if (_head == null)
             {
                 _head = dNew;
                 _tail = dNew;
             }
-            else 
+            else
             {
                 dNew.Next = _head;
                 _head.Previous = dNew;
@@ -50,21 +29,36 @@ namespace NwaySetAssociativeCache
             }
         }
 
+        public void OnSetUpdate(K key)
+        {
+            MoveToHead(_data[key]);
+        }
+
+        public K GetKeyToRemove()
+        {
+            return _tail.Key;
+        }
+
+        public void OnRemove()
+        {
+            RemoveTail();
+        }
+
         private void RemoveTail()
         {
-            _setData.Remove(_tail.Key);
-            if (_tail.Previous != null) 
+            _data.Remove(_tail.Key);
+            if (_tail.Previous != null)
             {
                 _tail.Previous.Next = null;
                 _tail = _tail.Previous;
             }
         }
 
-        private void MoveToHead(DNode<K, V> dNode)
+        private void MoveToHead(DNode<K> dNode)
         {
             if (_head == dNode)
                 return;
-            if(dNode.Previous != null)
+            if (dNode.Previous != null)
                 dNode.Previous.Next = dNode.Next;
             if (dNode.Next != null)
                 dNode.Next.Previous = dNode.Previous;
@@ -74,33 +68,6 @@ namespace NwaySetAssociativeCache
             _head.Previous = dNode;
             dNode.Next = _head;
             _head = dNode;
-        }
-
-        public bool Contains(K key)
-        {
-            return _setData.ContainsKey(key);
-        }
-        private void Remove(DNode<K, V> d)
-        {
-            DNode<K, V> actualValue = d;
-            _setData.TryGetValue(d.Key, out actualValue);
-
-            _setData.Remove(d.Key);
-            RemoveDNode(actualValue);
-        }
-
-        private void RemoveDNode(DNode<K, V> d)
-        {
-            if (d == null)
-                return;
-            if (d.Previous != null)
-                d.Previous.Next = d.Next;
-            if (d.Next != null)
-                d.Next.Previous = d.Previous;
-            if (d == _tail)
-                _tail = d.Previous;
-            if (d == _head)
-                _head = d.Next;
         }
     }
 }

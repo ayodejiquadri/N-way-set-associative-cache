@@ -1,15 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace NwaySetAssociativeCache
+﻿namespace NwaySetAssociativeCache
 {
-    public interface IReplacementAlgorithm<K,V>
+    public interface IReplacementAlgorithm<K>
     {
-       // void Set(K newkey, V data);
-        bool Contains(K key);
-       // void SetCache(List<Dictionary<K, V>> cache);
-        V Get(K key);
-        void Set(K newkey, V data);
-
-        DNode<K, V> GetNodeToRemove();
+        void OnGet(K key);
+        void OnSetNew(K key);
+        void OnSetUpdate(K key);
+        K GetKeyToRemove();
+        void OnRemove();
     }
 }

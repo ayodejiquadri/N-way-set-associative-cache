@@ -6,19 +6,22 @@ namespace NwaySetAssociativeCache
     public class NwaySetAssociativeCache<K, V> : ICache<K, V>
     {
         private readonly int _numberOfSets;
-        public List<Set<K, V>> _cache = new List<Set<K, V>>();
+        private readonly int _setSize;
+        public List<Set<K,V>> _cache = new List<Set<K,V>>();
 
         public NwaySetAssociativeCache(int numberOfSets, int setSize, ReplacementAlgorithms algorithm)
         {
             _numberOfSets = numberOfSets;
+            _setSize = setSize;
             for (int i = 0; i < numberOfSets; i++)
             {
                 _cache.Add(new Set<K, V>(setSize, algorithm));
             }
         }
-        public NwaySetAssociativeCache(int numberOfSets, int setSize, IReplacementAlgorithm<K, V> algorithm)
+        public NwaySetAssociativeCache(int numberOfSets, int setSize, IReplacementAlgorithm<K> algorithm)
         {
             _numberOfSets = numberOfSets;
+            _setSize = setSize;
             for (int i = 0; i < numberOfSets; i++)
             {
                 _cache.Add(new Set<K, V>(setSize, algorithm));

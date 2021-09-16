@@ -1,19 +1,17 @@
 ﻿namespace NwaySetAssociativeCache
 {
-    public class DNode<K, V>
+    public class DNode<K>
     {
         public K Key;
 
-        public V Val;
 
-        public DNode<K, V> Previous;
+        public DNode<K> Previous;
 
-        public DNode<K, V> Next;
+        public DNode<K> Next;
    
-        public DNode(K key, V val)
+        public DNode(K key)
         {
             this.Key = key;
-            this.Val = val;
         }
     }
 }
