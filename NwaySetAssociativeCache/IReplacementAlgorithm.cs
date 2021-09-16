@@ -9,5 +9,7 @@ namespace NwaySetAssociativeCache
        // void SetCache(List<Dictionary<K, V>> cache);
         V Get(K key);
         void Set(K newkey, V data);
+
+        DNode<K, V> GetNodeToRemove();
     }
 }

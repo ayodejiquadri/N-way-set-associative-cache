@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NwaySetAssociativeCache
 {
@@ -16,46 +17,65 @@ namespace NwaySetAssociativeCache
         {
             if (_setData.TryGetValue(key, out DNode<K, V> d)) 
             {
-                if(_head ==  null) 
-                {
-                    _head = d;
-                    _tail = d;
-                }
-                else
-                {
-                    _head.Previous = d;
-                    d.Next = _head;
-                    _head = d;
-                }
+                MoveToHead(d);
+                return d.Val;
             }
-            if (d == null)
-                return default;
-
-            return d.Val;
+            return default;
         }
 
         public void Set(K key, V data)
         {
-            DNode<K, V> dNew = new DNode<K, V>(key, data);
-            Remove(dNew);
-
+            if (_setData.ContainsKey(key)) 
+            {
+                _setData[key].Val = data;
+                MoveToHead(_setData[key]);
+                return;
+            }
             if (_setData.Count >= _sizeOfSet && _tail != null)
             {
-                Remove(_tail);
+                RemoveTail();
             }
+            DNode<K, V> dNew = new DNode<K, V>(key, data);
             _setData.Add(key, dNew);
             if (_head == null)
             {
                 _head = dNew;
                 _tail = dNew;
             }
-            else
+            else 
             {
-                _head.Previous = dNew;
                 dNew.Next = _head;
+                _head.Previous = dNew;
                 _head = dNew;
             }
         }
+
+        private void RemoveTail()
+        {
+            _setData.Remove(_tail.Key);
+            if (_tail.Previous != null) 
+            {
+                _tail.Previous.Next = null;
+                _tail = _tail.Previous;
+            }
+        }
+
+        private void MoveToHead(DNode<K, V> dNode)
+        {
+            if (_head == dNode)
+                return;
+            if(dNode.Previous != null)
+                dNode.Previous.Next = dNode.Next;
+            if (dNode.Next != null)
+                dNode.Next.Previous = dNode.Previous;
+            if (dNode == _tail)
+                _tail = dNode.Previous;
+
+            _head.Previous = dNode;
+            dNode.Next = _head;
+            _head = dNode;
+        }
+
         public bool Contains(K key)
         {
             return _setData.ContainsKey(key);
